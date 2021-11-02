@@ -2,6 +2,7 @@ name: mmdet-executor
 channels:
   - pytorch
   - conda-forge
+  - fastai
 dependencies:
   - python=3.8.11
   - pytorch
