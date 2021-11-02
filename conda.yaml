@@ -8,7 +8,7 @@ dependencies:
   - torchvision
   - torchaudio
   - cudatoolkit=11.3
-  - opencv-python-headless==4.5.3
+  - opencv-python-headless=4.5.4.58
   - pip
   - pip:
     - mlflow
