@@ -11,9 +11,6 @@ dependencies:
   - pip:
     - mlflow
     - --find-links https://download.pytorch.org/whl/cu111/torch_stable.html
-#    - torch==1.9.0+cu111
-#    - torchaudio==0.9.0
-#    - torchvision==0.10.0+cu111
     - --find-links https://download.openmmlab.com/mmcv/dist/cu111/torch1.9.0/in>
     - mmcv-full==1.3.9
     - opencv-python==4.5.3.56
