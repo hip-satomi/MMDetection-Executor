@@ -1,6 +1,12 @@
 name: mmdet-executor
+channels:
+  - pytorch
 dependencies:
   - python
+  - pytorch
+  - torchvision
+  - torchaudio
+  - cudatoolkit=11.1
   - pip:
     - mlflow
     - --find-links https://download.openmmlab.com/mmcv/dist/cu111/torch1.9.0/index.html
