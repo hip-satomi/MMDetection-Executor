@@ -6,7 +6,7 @@ dependencies:
   - pytorch
   - torchvision
   - torchaudio
-  - cudatoolkit=11.1
+  - cudatoolkit
   - pip:
     - mlflow
     - --find-links https://download.openmmlab.com/mmcv/dist/cu111/torch1.9.0/index.html
