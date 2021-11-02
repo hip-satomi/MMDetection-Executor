@@ -6,10 +6,10 @@ channels:
   - anaconda
 dependencies:
   - python=3.8.5
-  - pytorch
+  - pytorch=1.9.0
   - torchvision
   - torchaudio
-  - cudatoolkit=11.3
+  - cudatoolkit-10.2.89
   - opencv-python-headless=4.5.4.58
   - numpy=1.21.2
   - pip
