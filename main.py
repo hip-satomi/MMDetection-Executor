@@ -24,7 +24,7 @@ detections = [{
     "label": "Cell"
 } for det in overlay]
 
-output = {
+output_dict = {
     'model_version': '0.x.x',
     'segmentation': detections
 }
@@ -32,8 +32,6 @@ output = {
 print('!!!Performed prediction!!!')
 
 with open('output.json', 'w') as output:
-    json.dump({
-        'Status': 'No output yet'
-    }, output)
+    json.dump(output_dict, output)
 
 mlflow.log_artifact('output.json')
