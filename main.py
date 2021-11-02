@@ -22,7 +22,7 @@ print(f'Detected {len(overlay)} cells!')
 
 detections = [{
     "score": det.score,
-    "coordinates": det.coordinates,
+    "coordinates": det.coordinates.tolist(),
     "label": "Cell"
 } for det in overlay]
 
