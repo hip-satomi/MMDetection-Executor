@@ -18,6 +18,8 @@ print('Done')
 
 overlay = model.predict(source)
 
+print(f'Detected {len(overlay)} cells!')
+
 detections = [{
     "score": det.score,
     "coordinates": det.coordinates,
