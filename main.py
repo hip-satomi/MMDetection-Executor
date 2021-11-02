@@ -16,7 +16,18 @@ print('Loading model...')
 model = OfflineModel(config, checkpoint)
 print('Done')
 
-result = model.predict(source)
+overlay = model.predict(source)
+
+detections = [{
+    "score": det.score,
+    "coordinates": det.coordinates,
+    "label": "Cell"
+} for det in overlay]
+
+output = {
+    'model_version': '0.x.x',
+    'segmentation': detections
+}
 
 print('!!!Performed prediction!!!')
 
