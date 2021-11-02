@@ -3,7 +3,7 @@ import mlflow
 
 print('Hello mmdetection')
 
-open('output.json') as output:
+with open('output.json', 'w') as output:
     json.dump({
         'Status': 'No output yet'
     }, output)
