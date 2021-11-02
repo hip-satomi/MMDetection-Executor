@@ -8,6 +8,8 @@ input_image = sys.argv[2]
 config = sys.argv[4]
 checkpoint = sys.argv[6]
 
+print(f"Running prediction on {input_image}")
+
 source = LocalImageSource(input_image)
 
 print('Loading model...')
