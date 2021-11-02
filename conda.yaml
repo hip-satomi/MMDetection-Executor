@@ -4,7 +4,7 @@ channels:
   - conda-forge
   - fastai
 dependencies:
-  - python=3.8.11
+  - python=3.8.5
   - pytorch
   - torchvision
   - torchaudio
