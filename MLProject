@@ -8,7 +8,8 @@ conda_env: conda.yaml
 entry_points:
   main:
     parameters:
+      input_image: path
       config: path
       checkpoint: path
-    command: "python main.py --config {config} --checkpoint {checkpoint}"
+    command: "python main.py --image input_image --config {config} --checkpoint {checkpoint}"
 

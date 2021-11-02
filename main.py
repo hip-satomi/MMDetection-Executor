@@ -1,16 +1,22 @@
 import json
 import mlflow
 from acia.segm.processor.offline import OfflineModel
+from acia.segm.local import LocalImageSource
 import sys
 
-config = sys.argv[2]
-checkpoint = sys.argv[4]
+input_image = sys.argv[2]
+config = sys.argv[4]
+checkpoint = sys.argv[6]
+
+source = LocalImageSource(input_image)
 
 print('Loading model...')
 model = OfflineModel(config, checkpoint)
 print('Done')
 
-print('Hello mmdetection')
+result = model.predict(source)
+
+print('!!!Performed prediction!!!')
 
 with open('output.json', 'w') as output:
     json.dump({
