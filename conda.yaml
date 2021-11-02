@@ -1,12 +1,14 @@
 name: mmdet-executor
 channels:
   - pytorch
+  - conda-forge
 dependencies:
   - python=3.8.11
   - pytorch
   - torchvision
   - torchaudio
   - cudatoolkit=11.3
+  - opencv=4.5.3
   - pip
   - pip:
     - mlflow
