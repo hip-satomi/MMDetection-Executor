@@ -6,7 +6,9 @@ import sys
 config = sys.argv[2]
 checkpoint = sys.argv[4]
 
+print('Loading model...')
 model = OfflineModel(config, checkpoint)
+print('Done')
 
 print('Hello mmdetection')
 
