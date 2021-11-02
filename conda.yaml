@@ -3,6 +3,7 @@ channels:
   - pytorch
   - conda-forge
   - fastai
+  - anaconda
 dependencies:
   - python=3.8.5
   - pytorch
@@ -10,6 +11,7 @@ dependencies:
   - torchaudio
   - cudatoolkit=11.3
   - opencv-python-headless=4.5.4.58
+  - numpy=1.21.2
   - pip
   - pip:
     - mlflow
