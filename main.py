@@ -50,7 +50,7 @@ result = dict(
     model_version = f'{git_url}#{short_hash}',
     format_version = '0.1',
     segmentation = detections
-}
+)
 
 print('!!!Performed prediction!!!')
 
