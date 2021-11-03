@@ -20,14 +20,16 @@ overlay = model.predict(source)
 
 print(f'Detected {len(overlay)} cells!')
 
-detections = [{
-    "score": det.score,
-    "coordinates": det.coordinates.tolist(),
-    "label": "Cell"
-} for det in overlay]
+detections = [dict(
+    score = det.score,
+    contour_coordinates = det.coordinates.tolist(),
+    label = "Cell",
+    type = 'Polygon'
+ ) for det in overlay]
 
 output_dict = {
     'model_version': '0.x.x',
+    'format_version': '0.1',
     'segmentation': detections
 }
 
