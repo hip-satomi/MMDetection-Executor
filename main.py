@@ -55,6 +55,6 @@ result = dict(
 print('!!!Performed prediction!!!')
 
 with open('output.json', 'w') as output:
-    json.dump(output_dict, result)
+    json.dump(result, output)
 
 mlflow.log_artifact('output.json')
