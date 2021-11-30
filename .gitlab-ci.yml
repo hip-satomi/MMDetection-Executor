@@ -4,6 +4,6 @@ stages:
 # test environment setup in the server image
 test-env:
   stage: test-env
-  image: $CI_REGISTRY/j.seiffarth/serve-segmentation/server:latest
+  image: $CI_REGISTRY/j.seiffarth/serve-segmentation/server:master
   script:
     - conda env create -f conda.yaml 
