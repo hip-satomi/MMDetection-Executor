@@ -10,7 +10,7 @@ dependencies:
   - torchvision
   - torchaudio
   - cudatoolkit=10.2
-  - opencv-python-headless=4.5.4.58
+  - opencv-python-headless=4.5.4.60
   - numpy=1.21.2
   - git=2.33.1
   - gcc=11.2.0
