@@ -5,6 +5,7 @@ from acia.segm.local import LocalImageSource
 import sys
 import subprocess
 from urllib.parse import urlparse
+import torch
 
 
 def get_git_revision_short_hash() -> str:
@@ -27,8 +28,9 @@ print(f"Running prediction on {input_image}")
 
 source = LocalImageSource(input_image)
 
-print('Loading model...')
-model = OfflineModel(config, checkpoint)
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print('Loading model to {device}...')
+model = OfflineModel(config, checkpoint, device=device)
 print('Done')
 
 overlay = model.predict(source)
