@@ -6,8 +6,6 @@ from acia.segm.local import LocalImageSource
 import sys
 from urllib.parse import urlparse
 import torch
-import validators
-import hashlib
 import tempfile
 
 from utils import CACHE_FOLDER, cached_file, get_git_revision_short_hash, get_git_url, is_cached_file
@@ -45,16 +43,16 @@ with tempfile.TemporaryDirectory() as tmpcache:
         cache_folder = CACHE_FOLDER
 
     # get the cached versions
-    config_path = cached_file(args.config, cache_folder=cache_folder)
+    config_path = cached_file(args.config, cache_folder=cache_folder, enforce_ending='.py')
     checkpoint_path = cached_file(args.checkpoint, cache_folder=cache_folder)
 
     # load the images
     images = [LocalImageSource(image_path) for image_path in args.images]
 
-    print(f"Running prediction on {image_path}")
+    print(f"Running prediction on {''.join(args.images)}")
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print('Loading model to {device}...')
+    print(f'Loading model to {device}...')
     model = OfflineModel(config_path, checkpoint_path, device=device)
     print('Done')
 
