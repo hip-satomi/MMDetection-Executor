@@ -23,7 +23,7 @@ parser.add_argument('images', type=str, nargs='+',
 parser.add_argument('--config', type=str, help="mmdetection model configuration file.")
 parser.add_argument('--checkpoint', type=str, help="mmdetection model checkpoint file.")
 parser.add_argument('--package', type=str, help="Zip Packaged checkpoint and config file (checkpoint.pth, config.py)")
-parser.add_argument('--cached', type=bool, default=True, action="store_true", help="Whether to try to use a cached version file")
+parser.add_argument('--cached', type=bool, default=True, help="Whether to try to use a cached version file")
 
 args = parser.parse_args()
 
