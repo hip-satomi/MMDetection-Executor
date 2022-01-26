@@ -1,5 +1,6 @@
 import json
 from multiprocessing.sharedctypes import Value
+from typing import Sequence
 import mlflow
 from acia.segm.processor.offline import OfflineModel
 from acia.segm.local import LocalImageSource
@@ -7,6 +8,7 @@ import sys
 from urllib.parse import urlparse
 import torch
 import tempfile
+import sys
 
 from utils import CACHE_FOLDER, cached_file, get_git_revision_short_hash, get_git_url, is_cached_file
 
@@ -15,81 +17,88 @@ import argparse
 import os
 import glob
 
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('images', type=str, nargs='+',
-                    help='list of images')
-parser.add_argument('--config', type=str, required=True, help="mmdetection model configuration file.")
-parser.add_argument('--checkpoint', type=str, required=True, help="mmdetection model checkpoint file.")
-parser.add_argument('--package', type=str, help="Zip Packaged checkpoint and config file (checkpoint.pth, config.py)")
-parser.add_argument('--cached', type=bool, default=True, help="Whether to try to use a cached version file")
+def parse_args(arguments: Sequence[str]):
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('images', type=str, nargs='+',
+                        help='list of images')
+    parser.add_argument('--config', type=str, required=True, help="mmdetection model configuration file.")
+    parser.add_argument('--checkpoint', type=str, required=True, help="mmdetection model checkpoint file.")
+    parser.add_argument('--package', type=str, help="Zip Packaged checkpoint and config file (checkpoint.pth, config.py)")
+    parser.add_argument('--cached', type=bool, default=True, help="Whether to try to use a cached version file")
 
-args = parser.parse_args()
+    return parser.parse_args(arguments)
 
-# expand to array of images (e.g. if the path is a folder)
-if len(args.images) == 1:
-    image_path = args.images[0]
-    if os.path.isdir(image_path):
-        # it's a folder, iterate all images in the folder
-        args.images = sorted(glob.glob(os.path.join(image_path, '*.png')))
-    else:
-        # it may be a list of images
-        args.images = image_path.split(' ')
+def main(args):
 
-with tempfile.TemporaryDirectory() as tmpcache:
-    #elif args.config and args.checkpoint:
-    if not args.cached:
-        cache_folder = tmpcache
-    else:
-        cache_folder = CACHE_FOLDER
+    # expand to array of images (e.g. if the path is a folder)
+    if len(args.images) == 1:
+        image_path = args.images[0]
+        if os.path.isdir(image_path):
+            # it's a folder, iterate all images in the folder
+            args.images = sorted(glob.glob(os.path.join(image_path, '*.png')))
+        else:
+            # it may be a list of images
+            args.images = image_path.split(' ')
 
-    # get the cached versions
-    config_path = cached_file(args.config, cache_folder=cache_folder, enforce_ending='.py')
-    checkpoint_path = cached_file(args.checkpoint, cache_folder=cache_folder)
+    with tempfile.TemporaryDirectory() as tmpcache:
+        #elif args.config and args.checkpoint:
+        if not args.cached:
+            cache_folder = tmpcache
+        else:
+            cache_folder = CACHE_FOLDER
 
-    # load the images
-    images = [LocalImageSource(image_path) for image_path in args.images]
+        # get the cached versions
+        config_path = cached_file(args.config, cache_folder=cache_folder, enforce_ending='.py')
+        checkpoint_path = cached_file(args.checkpoint, cache_folder=cache_folder)
 
-    print(f"Running prediction on {''.join(args.images)}")
+        # load the images
+        images = [LocalImageSource(image_path) for image_path in args.images]
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print(f'Loading model to {device}...')
-    model = OfflineModel(config_path, checkpoint_path, device=device)
-    print('Done')
+        print(f"Running prediction on {''.join(args.images)}")
 
-    # get the git hash of the current commit
-    short_hash = get_git_revision_short_hash()
-    git_url = get_git_url()
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        print(f'Loading model to {device}...')
+        model = OfflineModel(config_path, checkpoint_path, device=device)
+        print('Done')
 
-    full_result = []
+        # get the git hash of the current commit
+        short_hash = get_git_revision_short_hash()
+        git_url = get_git_url()
 
-    for source in images:
-        overlay = model.predict(source)
+        full_result = []
 
-        print(f'Detected {len(overlay)} cells!')
+        for source in images:
+            overlay = model.predict(source)
 
-        detections = [dict(
-            score = det.score,
-            contour_coordinates = det.coordinates.tolist(),
-            label = "Cell",
-            type = 'Polygon'
+            print(f'Detected {len(overlay)} cells!')
 
-        ) for det in overlay]
+            detections = [dict(
+                score = det.score,
+                contour_coordinates = det.coordinates.tolist(),
+                label = "Cell",
+                type = 'Polygon'
 
-        result = dict(
-            model_version = f'{git_url}#{short_hash}',
-            format_version = '0.1',
-            segmentation = detections
-        )
+            ) for det in overlay]
 
-        full_result.append(result)
+            result = dict(
+                model_version = f'{git_url}#{short_hash}',
+                format_version = '0.1',
+                segmentation = detections
+            )
 
-    print('!!!Performed prediction!!!')
+            full_result.append(result)
 
-    if len(images) == 1:
-        full_result = full_result[0]
+        print('!!!Performed prediction!!!')
+
+        if len(images) == 1:
+            full_result = full_result[0]
 
 
-    with open('output.json', 'w') as output:
-        json.dump(full_result, output)
+        with open('output.json', 'w') as output:
+            json.dump(full_result, output)
 
-    mlflow.log_artifact('output.json')
+        mlflow.log_artifact('output.json')
+
+if __name__ == '__main__':
+    main(parse_args(sys.argv[1:]))
+
