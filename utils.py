@@ -2,7 +2,7 @@ import subprocess
 from urllib.parse import urlparse
 import hashlib
 import os
-import validator
+import validators
 import requests
 
 CACHE_FOLDER = os.path.join(os.environ['SHARED_FOLDER'], 'cache')
@@ -35,7 +35,7 @@ def cached_file(resource: str, cache_folder=CACHE_FOLDER, enforce_ending='')-> b
     elif os.path.isfile(resource):
         # return the persistent file
         return resource
-    elif validator.url(resource):
+    elif validators.url(resource):
         # download from url into cached
         r = requests.get(resource, allow_redirects=True)
         # write to cache
