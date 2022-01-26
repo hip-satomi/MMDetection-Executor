@@ -20,8 +20,8 @@ import glob
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('images', type=str, nargs='+',
                     help='list of images')
-parser.add_argument('--config', type=str, help="mmdetection model configuration file.")
-parser.add_argument('--checkpoint', type=str, help="mmdetection model checkpoint file.")
+parser.add_argument('--config', type=str, required=True, help="mmdetection model configuration file.")
+parser.add_argument('--checkpoint', type=str, required=True, help="mmdetection model checkpoint file.")
 parser.add_argument('--package', type=str, help="Zip Packaged checkpoint and config file (checkpoint.pth, config.py)")
 parser.add_argument('--cached', type=bool, default=True, help="Whether to try to use a cached version file")
 
