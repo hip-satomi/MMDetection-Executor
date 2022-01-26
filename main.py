@@ -1,12 +1,16 @@
 import json
+from multiprocessing.sharedctypes import Value
 import mlflow
 from acia.segm.processor.offline import OfflineModel
 from acia.segm.local import LocalImageSource
 import sys
 from urllib.parse import urlparse
 import torch
+import validators
+import hashlib
+import tempfile
 
-from utils import get_git_revision_short_hash, get_git_url
+from utils import CACHE_FOLDER, cached_file, get_git_revision_short_hash, get_git_url, is_cached_file
 
 
 import argparse
@@ -33,55 +37,61 @@ if len(args.images) == 1:
         # it may be a list of images
         args.images = image_path.split(' ')
 
-# TODO: take a package
+with tempfile.TemporaryDirectory() as tmpcache:
+    #elif args.config and args.checkpoint:
+    if not args.cached:
+        cache_folder = tmpcache
+    else:
+        cache_folder = CACHE_FOLDER
 
-images = [LocalImageSource(image_path) for image_path in args.images]
+    # get the cached versions
+    config_path = cached_file(args.config, cache_folder=cache_folder)
+    checkpoint_path = cached_file(args.checkpoint, cache_folder=cache_folder)
 
-input_image = sys.argv[2]
-config = sys.argv[4]
-checkpoint = sys.argv[6]
+    # load the images
+    images = [LocalImageSource(image_path) for image_path in args.images]
 
-print(f"Running prediction on {input_image}")
+    print(f"Running prediction on {image_path}")
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-print('Loading model to {device}...')
-model = OfflineModel(config, checkpoint, device=device)
-print('Done')
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print('Loading model to {device}...')
+    model = OfflineModel(config_path, checkpoint_path, device=device)
+    print('Done')
 
-# get the git hash of the current commit
-short_hash = get_git_revision_short_hash()
-git_url = get_git_url()
+    # get the git hash of the current commit
+    short_hash = get_git_revision_short_hash()
+    git_url = get_git_url()
 
-full_result = []
+    full_result = []
 
-for source in images:
-    overlay = model.predict(source)
+    for source in images:
+        overlay = model.predict(source)
 
-    print(f'Detected {len(overlay)} cells!')
+        print(f'Detected {len(overlay)} cells!')
 
-    detections = [dict(
-        score = det.score,
-        contour_coordinates = det.coordinates.tolist(),
-        label = "Cell",
-        type = 'Polygon'
+        detections = [dict(
+            score = det.score,
+            contour_coordinates = det.coordinates.tolist(),
+            label = "Cell",
+            type = 'Polygon'
 
-    ) for det in overlay]
+        ) for det in overlay]
 
-    result = dict(
-        model_version = f'{git_url}#{short_hash}',
-        format_version = '0.1',
-        segmentation = detections
-    )
+        result = dict(
+            model_version = f'{git_url}#{short_hash}',
+            format_version = '0.1',
+            segmentation = detections
+        )
 
-    full_result.append(result)
+        full_result.append(result)
 
-print('!!!Performed prediction!!!')
+    print('!!!Performed prediction!!!')
 
-if len(images) == 1:
-    full_result = full_result[0]
+    if len(images) == 1:
+        full_result = full_result[0]
 
 
-with open('output.json', 'w') as output:
-    json.dump(full_result, output)
+    with open('output.json', 'w') as output:
+        json.dump(full_result, output)
 
-mlflow.log_artifact('output.json')
+    mlflow.log_artifact('output.json')

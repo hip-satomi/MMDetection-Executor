@@ -9,7 +9,14 @@ entry_points:
   main:
     parameters:
       input_images: path
-      config: path
-      checkpoint: path
+      config: uri
+      checkpoint: uri
     command: "python main.py --config {config} --checkpoint {checkpoint} {input_images}"
+
+  # TODO: implement in main.py
+  packaged:
+    parameters:
+      input_images: path
+      package: uri
+    command: "python main.py --package {package} {input_images}"
 
