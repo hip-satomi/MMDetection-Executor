@@ -1,9 +1,60 @@
 stages:
- - test-env
+ - test
 
 # test environment setup in the server image
 test-env:
-  stage: test-env
+  stage: test
   image: $CI_REGISTRY/j.seiffarth/serve-segmentation/server:master
   script:
-    - conda env create -f conda.yaml 
+    - conda env create -f conda.yaml
+
+test-local:
+  variables:
+    CACHE_FOLDER: /builds/cache
+  stage: test
+  image: $CI_REGISTRY/j.seiffarth/serve-segmentation/server:master
+  tags:
+  - big-ram
+  script:
+    - mkdir ${CACHE_FOLDER}
+    - source ~/.bashrc
+    - conda env create -f conda.yaml
+    - conda activate mmdet-executor
+    - python -m unittest tests/test_local.py
+  after_script:
+    - rm -r ${CACHE_FOLDER}
+
+# execute the segmentation prediction with a test image
+test-online:
+  variables:
+    SERVICE_LOG_NAME: "/builds/service-logs/logs-${CI_COMMIT_REF_NAME}-${CI_PIPELINE_ID}.txt"
+    FF_NETWORK_PER_BUILD: "true"     # activate container-to-container networking
+  stage: test
+  image: python:3.9.10
+  tags:
+    - big-ram
+  services:
+    - name: $CI_REGISTRY/j.seiffarth/serve-segmentation/server:master
+      alias: segserve
+      entrypoint:
+      - /bin/bash
+      command:
+      - -c
+      - "echo Log dir: ${SERVICE_LOG_NAME}; mkdir -p /builds/service-logs; source /home/appuser/.bashrc; uvicorn --host 0.0.0.0 --port 80 main:app 2>&1 | tee ${SERVICE_LOG_NAME}"
+
+  script:
+    - echo "Log dir ${SERVICE_LOG_NAME}"
+    - |
+      function section_start() {
+        echo -e "\e[0Ksection_start:`date +%s`:service_logs[collapsed=true]\r\e[0KService logs"
+      }
+
+      function section_end() {
+        echo -e "\e[0Ksection_end:`date +%s`:service_logs\r\e[0K"
+      }
+    - |
+      (tail -f -n +1 "${SERVICE_LOG_NAME}" | awk '{print "[service-logs]: " $0}' &)
+    - pip install requests pillow
+    - python -m unittest tests/test_online.py
+  after_script:
+    - rm ${SERIVCE_LOG_NAME}
