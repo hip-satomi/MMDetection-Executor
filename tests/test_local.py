@@ -1,5 +1,5 @@
 import unittest
-
+from main import main, parse_args
 class TestLocal(unittest.TestCase):
 
     def setUp(self):
@@ -15,4 +15,7 @@ class TestLocal(unittest.TestCase):
             file.write(r.content)
 
     def test_prediction(self):
-        pass
+        main(parse_args(["--config", "https://fz-juelich.sciebo.de/s/LdVbQhCUMNUBnXy/download", "--checkpoint", "https://fz-juelich.sciebo.de/s/Qngmf7FR7v7GZfS/download", "test.jpeg"]))
+
+if __name__ == '__main__':
+    unittest.main()
