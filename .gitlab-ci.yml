@@ -4,7 +4,7 @@ stages:
 # test environment setup in the server image
 test-env:
   stage: test
-  image: $CI_REGISTRY/j.seiffarth/serve-segmentation/server:master
+  image: $CI_REGISTRY/satomi/seg-serve/server:master
   script:
     - conda env create -f conda.yaml
 
@@ -12,7 +12,7 @@ test-local:
   variables:
     CACHE_FOLDER: /builds/cache
   stage: test
-  image: $CI_REGISTRY/j.seiffarth/serve-segmentation/server:master
+  image: $CI_REGISTRY/satomi/seg-serve/server:master
   tags:
   - big-ram
   script:
@@ -34,7 +34,7 @@ test-online:
   tags:
     - big-ram
   services:
-    - name: $CI_REGISTRY/j.seiffarth/serve-segmentation/server:master
+    - name: $CI_REGISTRY/satomi/seg-serve/server:master
       alias: segserve
       entrypoint:
       - /bin/bash
