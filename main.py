@@ -80,22 +80,18 @@ def main(args):
 
             ) for det in overlay]
 
-            result = dict(
-                model_version = f'{git_url}#{short_hash}',
-                format_version = '0.1',
-                segmentation = detections
-            )
-
-            full_result.append(result)
+            full_result.append(detections)
 
         print('!!!Performed prediction!!!')
 
-        if len(images) == 1:
-            full_result = full_result[0]
-
+        result = dict(
+            model = f'{git_url}#{short_hash}',
+            format_version = '0.2',
+            segmentation_data = full_result
+        )
 
         with open('output.json', 'w') as output:
-            json.dump(full_result, output)
+            json.dump(result, output)
 
         mlflow.log_artifact('output.json')
 
