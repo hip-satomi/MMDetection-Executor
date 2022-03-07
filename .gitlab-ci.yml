@@ -1,3 +1,6 @@
+
+image: continuumio/miniconda3
+
 stages:
  - test
 
@@ -11,26 +14,34 @@ test-env:
 test-local:
   variables:
     CACHE_FOLDER: /builds/cache
+    CONDA_ENV: "mmdet-executor"
   stage: test
   image: $CI_REGISTRY/satomi/seg-serve/server:master
   tags:
   - big-ram
   script:
+    - rm -rf ${CACHE_FOLDER}
     - mkdir ${CACHE_FOLDER}
     - source ~/.bashrc
     - conda env create -f conda.yaml
     - conda activate mmdet-executor
+    - pip install coverage
     - python -m unittest tests/test_local.py
+#    - python -m coverage run --source=./ -m unittest tests/test_local.py
+#    - coverage xml
   after_script:
     - rm -r ${CACHE_FOLDER}
+  artifacts:
+    reports:
+      cobertura: coverage.xml
 
 # execute the segmentation prediction with a test image
 test-online:
   variables:
     SERVICE_LOG_NAME: "/builds/service-logs/logs-${CI_COMMIT_REF_NAME}-${CI_PIPELINE_ID}.txt"
     FF_NETWORK_PER_BUILD: "true"     # activate container-to-container networking
+    CONDA_ENV: "mmdet-executor"
   stage: test
-  image: python:3.9.10
   tags:
     - big-ram
   services:
@@ -54,7 +65,16 @@ test-online:
       }
     - |
       (tail -f -n +1 "${SERVICE_LOG_NAME}" | awk '{print "[service-logs]: " $0}' &)
-    - pip install requests pillow
-    - python -m unittest tests/test_online.py
+    - conda install mamba -c conda-forge
+    - mamba env create -f conda.yaml
+    - conda run -n ${CONDA_ENV} pip install requests pillow coverage
+    - conda run -n ${CONDA_ENV} python -m unittest tests/test_online.py
+#    - conda run -n ${CONDA_ENV} python -m coverage run --source=./ -m unittest tests/test_local.py
+#    - conda run -n ${CONDA_ENV} coverage xml
+
   after_script:
     - rm ${SERIVCE_LOG_NAME}
+  artifacts:
+    reports:
+      cobertura: coverage.xml
+      
