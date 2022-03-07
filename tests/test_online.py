@@ -59,7 +59,7 @@ class TestOnlineSegmentation(unittest.TestCase):
 
         # send a request to the server
         response = requests.post(
-            'http://segserve/batch-image-prediction/', params=params, files=multipart_form_data, timeout=600
+            'http://segserve/batch-image-prediction/', params=params, files=multipart_form_data, timeout=20 * 60
         )
 
         # output response

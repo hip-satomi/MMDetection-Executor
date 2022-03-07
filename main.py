@@ -10,7 +10,8 @@ import torch
 import tempfile
 import sys
 
-from utils import CACHE_FOLDER, cached_file, get_git_revision_short_hash, get_git_url, is_cached_file
+from utils import CACHE_FOLDER, cached_file
+from git_utils import get_git_revision_short_hash, get_git_url
 
 
 import argparse
