@@ -1,6 +1,6 @@
 # MMDetection-Executor
 
-This is an mlproject wrapper around the [mmdetection](https://github.com/open-mmlab/mmdetection) segmentation and detection framework supporting a wide variety of machine learing approaches.
+This is a [SegServe](https://github.com/hip-satomi/SegServe) executor for the [mmdetection](https://github.com/open-mmlab/mmdetection) segmentation and detection framework supporting a wide variety of machine learing approaches.
 
 ## Local testing
 
@@ -16,4 +16,4 @@ By default the config and checkpoint paths are cached when specified as a url. T
 
 ## Intended Usage
 
-The wrapper is used to deploy any mmdetection methods in the segServe runtime environment. SegServe can be used to host 3rd party segmentation algorithms and execute them on a central computer while providing a REST interface for clients.
+The wrapper is used to deploy any mmdetection methods in the [SegServe](https://github.com/hip-satomi/SegServe) runtime environment. SegServe can be used to host 3rd party segmentation algorithms and execute them on a central computer while providing a REST interface for clients. Therefore, end-users do not need any powerful hardware/GPU.
