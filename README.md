@@ -7,7 +7,7 @@ This is a [SegServe](https://github.com/hip-satomi/SegServe) executor for the [m
 Make sure you have [anaconda]() installed and an active environment with `mlflow`. Then execute
 ```bash
 pip install mlflow
-mlproject run ./ -e main -P input_images=<path to your local image or image folder (*.png)> -P config=<path/url to your mmdetection config> -P checkpoint=<path/url to your mmdetection model checkpoint>
+mlflow run ./ -e main -P input_images=<path to your local image or image folder (*.png)> -P config=<path/url to your mmdetection config> -P checkpoint=<path/url to your mmdetection model checkpoint>
 ```
 The resulting segmentation should be written to `output.json` and logged as an artifact in the mlflow run.
 
