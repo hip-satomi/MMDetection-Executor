@@ -20,3 +20,6 @@ entry_points:
       package: uri
     command: "python main.py --package {package} {input_images}"
 
+  info:
+    command: "python info.py"
+

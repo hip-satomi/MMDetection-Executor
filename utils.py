@@ -10,18 +10,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 CACHE_FOLDER = os.path.join(os.environ['CACHE_FOLDER'])
 
-def get_git_revision_short_hash() -> str:
-    return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
-
-def get_git_url() -> str:
-    basic_url = subprocess.check_output(['git', 'config', '--get', 'remote.origin.url']).decode('ascii').strip()
-    parsed = urlparse(basic_url)
-    if parsed.username and parsed.password:
-        # erase username and password
-        return parsed._replace(netloc="{}".format(parsed.hostname)).geturl()
-    else:
-        return parsed.geturl()
-
 def is_cached_file(resource: str, cache_folder=CACHE_FOLDER, enforce_ending='')-> bool:
     md5 = hashlib.md5(resource.encode('utf-8')).hexdigest()
     return os.path.isfile(os.path.join(cache_folder, md5 + enforce_ending))
