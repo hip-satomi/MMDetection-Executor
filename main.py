@@ -76,7 +76,7 @@ def main(args):
             detections = [dict(
                 score = det.score,
                 contour_coordinates = det.coordinates.tolist(),
-                label = "Cell",
+                label = det.label,
                 type = 'Polygon'
 
             ) for det in overlay]
